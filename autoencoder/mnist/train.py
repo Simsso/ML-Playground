@@ -9,16 +9,16 @@ mnist = input_data.read_data_sets("/tmp/data/", one_hot=True)
 
 
 LEARNING_RATE = 3e-4
-STEPS = 30000
-BATCH_SIZE = 512
-MODEL_NAME = str(model.CODE_UNITS) + "-code_" + str(BATCH_SIZE) + "-batch_anomaly2"
+STEPS = 100000
+BATCH_SIZE = 128
+MODEL_NAME = str(model.CODE_UNITS) + "-code_" + str(BATCH_SIZE) + "-batch_anomaly_contractive-.2_wd1e-6"
 
 
 def main(args=None):
     img_batch = tf.placeholder(tf.float32, shape=[None, model.INPUT_SIZE], name='img_batch')
     code = model.encoder(img_batch)
     reconstruction = model.decoder(code)
-    loss = model.loss(img_batch, reconstruction)
+    loss = model.loss(img_batch, code, reconstruction)
     optimizer = tf.train.AdamOptimizer(LEARNING_RATE).minimize(loss)
     anomaly_map = model.anomaly_map(img_batch, reconstruction)
 
@@ -34,16 +34,12 @@ def main(args=None):
 
     for step in range(STEPS):
         img_batch_values, _ = mnist.train.next_batch(BATCH_SIZE)
-        _, loss_val, summary = sess.run([optimizer, loss, summary_merged], feed_dict={
+        _, summary = sess.run([optimizer, summary_merged], feed_dict={
             img_batch: img_batch_values
         })
 
-        log_writer.add_summary(summary, step)
-
-        if step % 250 == 0:
-            # loss_val contains the loss of each element of the batch
-            loss_scalar = np.mean(loss_val, axis=0)
-            print(str(step) + " \t" + str(loss_scalar))
+        if step % 10 == 0:
+            log_writer.add_summary(summary, step)
 
 
 if __name__ == '__main__':

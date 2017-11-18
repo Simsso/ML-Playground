@@ -1,0 +1,1 @@
+from autoencoder.mnist import model

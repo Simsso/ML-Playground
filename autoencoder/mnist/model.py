@@ -57,3 +57,9 @@ def loss(img, reconstruction):
     batch_loss = tf.reduce_mean(loss_array, [0], name='batch_loss')
     tf.summary.scalar('loss', batch_loss)
     return loss_array
+
+
+def anomaly_map(img, reconstruction):
+    delta = tf.subtract(img, reconstruction, name='delta')
+    normalized = tf.divide(tf.abs(delta), 2.0, name='normalized_delta')
+    return normalized

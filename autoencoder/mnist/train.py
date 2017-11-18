@@ -9,9 +9,9 @@ mnist = input_data.read_data_sets("/tmp/data/", one_hot=True)
 
 
 LEARNING_RATE = 3e-4
-STEPS = 20000
-BATCH_SIZE = 256
-MODEL_NAME = "64-code_256-batch"
+STEPS = 30000
+BATCH_SIZE = 512
+MODEL_NAME = str(model.CODE_UNITS) + "-code_" + str(BATCH_SIZE) + "-batch_anomaly2"
 
 
 def main(args=None):
@@ -20,9 +20,11 @@ def main(args=None):
     reconstruction = model.decoder(code)
     loss = model.loss(img_batch, reconstruction)
     optimizer = tf.train.AdamOptimizer(LEARNING_RATE).minimize(loss)
+    anomaly_map = model.anomaly_map(img_batch, reconstruction)
 
     tf.summary.image('input', tf.reshape(img_batch, [-1, model.IMG_WIDTH, model.IMG_HEIGHT, 1]), 4)
     tf.summary.image('reconstruction', tf.reshape(reconstruction, [-1, model.IMG_WIDTH, model.IMG_HEIGHT, 1]), 4)
+    tf.summary.image('anomalies', tf.reshape(anomaly_map, [-1, model.IMG_WIDTH, model.IMG_HEIGHT, 1]), 4)
 
     summary_merged = tf.summary.merge_all()  # Tensorboard
     init_op = tf.initialize_all_variables()

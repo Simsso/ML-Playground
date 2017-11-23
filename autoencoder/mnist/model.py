@@ -11,8 +11,8 @@ DENSE3_UNITS = DENSE1_UNITS
 
 # Factor by which the penalty -- squared Frobenius of the Jacobian matrix of partial derivaties
 # of the code with respect to the inputs -- is weighted.
-CONTRACTION_FACTOR = 0.2
-WEIGHT_DECAY = 1e-6 
+CONTRACTION_FACTOR = 0.05
+WEIGHT_DECAY = 1e-9
 
 
 def encoder(img):
@@ -27,14 +27,24 @@ def encoder(img):
             pre_activation = tf.add(tf.matmul(img, weights), biases, name='pre_activation')
             dense1 = tf.sigmoid(pre_activation, name=scope.name)
 
-        with tf.variable_scope('dense2'):
+        with tf.variable_scope('dense2') as scope:
+            weights = tf.get_variable('weights', [DENSE1_UNITS, DENSE1_UNITS], dtype=tf.float32,
+                                      initializer=tf.truncated_normal_initializer(stddev=1.0/DENSE1_UNITS))
+            add_weight_decay(weights, WEIGHT_DECAY)
+            biases = tf.get_variable('biases', shape=[DENSE1_UNITS], dtype=tf.float32,
+                                     initializer=tf.constant_initializer(0.0, dtype=tf.float32))
+            add_weight_decay(biases, WEIGHT_DECAY)
+            pre_activation = tf.add(tf.matmul(dense1, weights), biases, name='pre_activation')
+            dense2 = tf.sigmoid(pre_activation, name=scope.name)
+
+        with tf.variable_scope('dense3'):
             weights = tf.get_variable('weights', [DENSE1_UNITS, CODE_UNITS], dtype=tf.float32,
                                       initializer=tf.truncated_normal_initializer(stddev=1.0/CODE_UNITS))
             add_weight_decay(weights, WEIGHT_DECAY)
             biases = tf.get_variable('biases', shape=[CODE_UNITS], dtype=tf.float32,
                                      initializer=tf.constant_initializer(0.0, dtype=tf.float32))
             add_weight_decay(biases, WEIGHT_DECAY)
-            pre_activation = tf.add(tf.matmul(dense1, weights), biases, name='pre_activation')
+            pre_activation = tf.add(tf.matmul(dense2, weights), biases, name='pre_activation')
             code = tf.sigmoid(pre_activation, name='code')
 
     return code
@@ -42,7 +52,7 @@ def encoder(img):
 
 def decoder(code):
     with tf.variable_scope('decoder'):
-        with tf.variable_scope('dense3') as scope:
+        with tf.variable_scope('dense4') as scope:
             weights = tf.get_variable('weights', [CODE_UNITS, DENSE3_UNITS], dtype=tf.float32,
                                       initializer=tf.truncated_normal_initializer(stddev=1.0/DENSE3_UNITS))
             add_weight_decay(weights, WEIGHT_DECAY)
@@ -50,16 +60,26 @@ def decoder(code):
                                      initializer=tf.constant_initializer(0.0, dtype=tf.float32))
             add_weight_decay(biases, WEIGHT_DECAY)
             pre_activation = tf.add(tf.matmul(code, weights), biases, name='pre_activation')
-            dense3 = tf.sigmoid(pre_activation, name=scope.name)
+            dense4 = tf.sigmoid(pre_activation, name=scope.name)
 
-        with tf.variable_scope('dense4'):
+        with tf.variable_scope('dense5') as scope:
+            weights = tf.get_variable('weights', [DENSE3_UNITS, DENSE3_UNITS], dtype=tf.float32,
+                                      initializer=tf.truncated_normal_initializer(stddev=1.0 / DENSE3_UNITS))
+            add_weight_decay(weights, WEIGHT_DECAY)
+            biases = tf.get_variable('biases', shape=[DENSE3_UNITS], dtype=tf.float32,
+                                     initializer=tf.constant_initializer(0.0, dtype=tf.float32))
+            add_weight_decay(biases, WEIGHT_DECAY)
+            pre_activation = tf.add(tf.matmul(dense4, weights), biases, name='pre_activation')
+            dense5 = tf.sigmoid(pre_activation, name=scope.name)
+
+        with tf.variable_scope('dense6'):
             weights = tf.get_variable('weights', [DENSE3_UNITS, OUTPUT_SIZE], dtype=tf.float32,
                                       initializer=tf.truncated_normal_initializer(stddev=1.0/OUTPUT_SIZE))
             add_weight_decay(weights, WEIGHT_DECAY)
             biases = tf.get_variable('biases', shape=[OUTPUT_SIZE], dtype=tf.float32,
                                      initializer=tf.constant_initializer(0.0, dtype=tf.float32))
             add_weight_decay(biases, WEIGHT_DECAY)
-            pre_activation = tf.add(tf.matmul(dense3, weights), biases, name='pre_activation')
+            pre_activation = tf.add(tf.matmul(dense5, weights), biases, name='pre_activation')
             reconstruction = tf.sigmoid(pre_activation, name='reconstruction')
 
     return reconstruction

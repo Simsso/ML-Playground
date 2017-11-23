@@ -9,9 +9,9 @@ mnist = input_data.read_data_sets("/tmp/data/", one_hot=True)
 
 
 LEARNING_RATE = 3e-4
-STEPS = 100000
-BATCH_SIZE = 128
-MODEL_NAME = str(model.CODE_UNITS) + "-code_" + str(BATCH_SIZE) + "-batch_anomaly_contractive-.2_wd1e-6"
+STEPS = 250000
+BATCH_SIZE = 256
+MODEL_NAME = "deep_" + str(model.CODE_UNITS) + "-code_" + str(BATCH_SIZE) + "-batch_contract-.05_wd1e-9"
 
 
 def main(args=None):

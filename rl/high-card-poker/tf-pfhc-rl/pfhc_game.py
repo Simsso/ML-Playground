@@ -7,13 +7,14 @@ class PreFlopHighCardGame:
     SMALL_BLIND = 1
 
     def __init__(self, player1: Player, player2: Player):
-        self.p1 = player1
-        self.p2 = player2
+        self.p1: Player = player1
+        self.p2: Player = player2
         self.button = player2  # corresponds to big blind in heads-up
         self.pot: int = 0
         self.over = False
         self.next_player: Player = None
-        self._round_count = 0
+        self.round_count = 0
+        self.last_gain = [0, 0]  # the amount that the players have gained during the last round
         self.next_round()
 
     def next_round(self):
@@ -21,7 +22,7 @@ class PreFlopHighCardGame:
             self.over = True
             return
 
-        self._round_count += 1
+        self.round_count += 1
         self.pot = 0
         self.p1.reset_bet_size()
         self.p2.reset_bet_size()
@@ -30,17 +31,19 @@ class PreFlopHighCardGame:
         self.p1.set_card(Card.random_card())
         self.p2.set_card(Card.random_card())
         self.next_player = self.button  # next small blind
-        self.button = self._other(self.button)  # move button
+        self.button = self.other(self.button)  # move button
 
         # place blinds
         self.pot = self.button.take(PreFlopHighCardGame.BIG_BLIND)  # big blind
-        self.pot += self._other(self.button).take(PreFlopHighCardGame.SMALL_BLIND)  # small blind
+        self.pot += self.other(self.button).take(PreFlopHighCardGame.SMALL_BLIND)  # small blind
 
-    def call(self, player):
+    def call(self, player=None):
         """
         :param player: The player who makes the call.
         """
-        opponent_bet = self._other(player).bet_size()
+        if player is None:
+            player = self.next_player
+        opponent_bet = self.other(player).bet_size()
         own_bet = player.bet_size()
         missing = opponent_bet - own_bet
 
@@ -64,29 +67,33 @@ class PreFlopHighCardGame:
         # otherwise (normal call, not pre from sb)
         self.show_down()
 
-    def fold(self, player):
+    def fold(self, player=None):
         """
         :param player: The player who folds.
         """
-        self.payout(self._other(player))
+        if player is None:
+            player = self.next_player
+        self.payout(self.other(player))
 
-    def bet(self, player, amount):
+    def bet(self, player = None, amount = 0):
         """
         :param player: The player who bets / raises.
         :param amount: The amount by which the player raises.
                        If the raise amount is invalid, it will be rounded to a call or a raise.
         """
+        if player is None:
+            player = self.next_player
         if amount < 0:
             raise ValueError("Bet amount can not be negative");
         if amount == 0:  # betting 0 is calling
             return self.call(player)
 
-        opponent_bet = self._other(player).bet_size()
+        opponent_bet = self.other(player).bet_size()
         own_bet = player.bet_size()
         bet_difference = opponent_bet - own_bet
 
         # a bet is always a call if the other player is all-in
-        if self._other(player).is_all_in():
+        if self.other(player).is_all_in():
             return self.call()
 
         # a bet amount is invalid if it is smaller than twice the difference between both players bets (so far)
@@ -119,12 +126,20 @@ class PreFlopHighCardGame:
                 raise ValueError("Pot contains an uneven number of chips. This state is invalid.");
             self.p1.ship_over(int(self.pot / 2))
             self.p2.ship_over(int(self.pot / 2))
+            self.last_gain = [0, 0]
         else:
             player.ship_over(self.pot)
 
+            # set last gain array
+            # each player has gained the amount that they win (pot or 0) minus their contribution to the pot.
+            if player is self.p1:
+                self.last_gain = [self.pot - self.p1.bet_size(), - self.p2.bet_size()]
+            else:
+                self.last_gain = [- self.p1.bet_size(), self.pot - self.p2.bet_size()]
+
         self.next_round()
 
-    def _other(self, player):
+    def other(self, player):
         """
         :param player: One of the two players in the game.
         :return: The player who was not the argument, i.e. the other player.
@@ -134,7 +149,7 @@ class PreFlopHighCardGame:
         return self.p1
 
     def update_next_player(self):
-        self.next_player = self._other(self.next_player)
+        self.next_player = self.other(self.next_player)
 
     def _equal_stacks(self):
         """
@@ -143,7 +158,7 @@ class PreFlopHighCardGame:
         return self.p1.stack() == self.p2.stack()
 
     def __str__(self):
-        return "Round #" + str(self._round_count) + "\n" \
+        return "Round #" + str(self.round_count) + "\n" \
                "=======================\n" + \
                "Player " + self.p1.name + " | Player " + self.p2.name + "\n" + \
                "Stack: " + str(self.p1.stack()) + " | " + str(self.p2.stack()) + "\n" + \

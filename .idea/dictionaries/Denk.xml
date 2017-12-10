@@ -2,6 +2,7 @@
   <dictionary name="Denk">
     <words>
       <w>contractive</w>
+      <w>convolutional</w>
       <w>envs</w>
       <w>grayscale</w>
       <w>jacobian</w>

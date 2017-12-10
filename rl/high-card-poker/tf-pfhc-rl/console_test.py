@@ -15,8 +15,8 @@ while not game.over:
 
     action = input("Action {f,c,b}: ")
     if action == 'b':
-        amount = int(input("Amount to bet: "))
-        game.bet(amount=amount)
+        amount = 0  # int(input("Amount to bet: "))
+        game.bet(bet_size=amount)
     elif action == 'c':
         game.call()
     else:

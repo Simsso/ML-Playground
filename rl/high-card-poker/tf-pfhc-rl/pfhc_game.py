@@ -18,6 +18,10 @@ class PreFlopHighCardGame:
         self.next_round()
 
     def next_round(self):
+        # check consistency
+        if not ((self.p1.stack() - self.p1.bet_size() + self.p2.stack() - self.p2.bet_size() + self.pot) % 2 == 0):
+            raise ValueError("Invalid amount of money in the game")
+
         if self.p1.stack() < PreFlopHighCardGame.BIG_BLIND or self.p2.stack() < PreFlopHighCardGame.BIG_BLIND:
             self.over = True
             return
@@ -60,6 +64,9 @@ class PreFlopHighCardGame:
         # standard call
         self.pot += player.take(missing)
 
+        if player.is_all_in():  # if a player calls all-in, a showdown always follows
+            return self.show_down()
+
         # calling usually leads to a show down except the small blind called the big blind
         if player is not self.button and player.bet_size() == PreFlopHighCardGame.BIG_BLIND:
             # player is sb and called to bb
@@ -75,34 +82,38 @@ class PreFlopHighCardGame:
             player = self.next_player
         self.payout(self.other(player))
 
-    def bet(self, player = None, amount = 0):
+    def bet(self, player=None, bet_size=0):
         """
         :param player: The player who bets / raises.
-        :param amount: The amount by which the player raises.
+        :param bet_size: The amount by which the player raises.
                        If the raise amount is invalid, it will be rounded to a call or a raise.
         """
         if player is None:
             player = self.next_player
-        if amount < 0:
+        if bet_size < 0:
             raise ValueError("Bet amount can not be negative");
-        if amount == 0:  # betting 0 is calling
+
+        # betting is equivalent to calling if the opponent is all-in
+        if self.other(player).is_all_in():
             return self.call(player)
 
         opponent_bet = self.other(player).bet_size()
         own_bet = player.bet_size()
         bet_difference = opponent_bet - own_bet
 
-        # a bet is always a call if the other player is all-in
-        if self.other(player).is_all_in():
-            return self.call()
+        # amount must be at least the bb and at least the bet difference
+        bet_size = max(bet_size, PreFlopHighCardGame.BIG_BLIND, bet_difference)
+        if player.bet_size() == 0:
+            bet_size = max(bet_size, 2 * PreFlopHighCardGame.BIG_BLIND- PreFlopHighCardGame.SMALL_BLIND)
 
-        # a bet amount is invalid if it is smaller than twice the difference between both players bets (so far)
-        # only considered if the player is not all-in
-        if not (amount == player.stack()) and amount < bet_difference * 2:
-            if amount < bet_difference * 1.5:  # closer to a call
-                return self.call(player)
-            else:
-                amount = bet_difference * 2  # round to raise
+        # amount is at most an opponent all-in
+        bet_size = min(bet_size, self.other(player).stack())
+
+        amount = min(bet_difference + bet_size, player.stack())  # amount to put in (call and bet) is at most all-in
+
+        if amount <= bet_difference:  # bet is actually a call all-in
+            return self.show_down()
+
         self.pot += player.take(amount)
         self.update_next_player()
 
@@ -122,10 +133,20 @@ class PreFlopHighCardGame:
         """
         if player is None:
             # split
+            p1bonus = 0
+            p2bonus = 0
             if self.pot % 2 == 1:
-                raise ValueError("Pot contains an uneven number of chips. This state is invalid.");
-            self.p1.ship_over(int(self.pot / 2))
-            self.p2.ship_over(int(self.pot / 2))
+                if not (self.p1.is_all_in() or self.p2.is_all_in()):
+                    raise ValueError("Pot contains an uneven number of chips. This state is invalid.");
+                else:
+                    # one player is all in with less than 1 bb
+                    # pot cant be divided by two
+                    if self.p1.is_all_in():
+                        p2bonus = 1
+                    else:
+                        p1bonus = 1
+            self.p1.ship_over(int(self.pot / 2) + p1bonus)
+            self.p2.ship_over(int(self.pot / 2) + p2bonus)
             self.last_gain = [0, 0]
         else:
             player.ship_over(self.pot)

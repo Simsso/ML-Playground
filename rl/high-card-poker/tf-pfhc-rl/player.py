@@ -1,8 +1,9 @@
 from card import Card
+from strategy import *
 
 
 class Player:
-    def __init__(self, name, stack_size, card: Card = None):
+    def __init__(self, name, stack_size, card: Card = None, strategy: Strategy = StrategyRandom):
         """
         Constructor for a new player object. A player participates in the heads up high card game.
         :param name: The players name.
@@ -22,6 +23,8 @@ class Player:
         self._stack_size = stack_size
         self._initial_stack_size = stack_size
 
+        self.strategy = strategy
+
     def take(self, amount):
         """
         Removes the given amount from the player's stack.
@@ -29,8 +32,7 @@ class Player:
         :param amount: The amount to subtract.
         :return: The amount argument.
         """
-        if self._stack_size < amount:
-            # raise ValueError("Amount is too high.")
+        if self._stack_size <= amount:
             amount = self._stack_size
             self._all_in = True
         self._stack_size = self._stack_size - amount

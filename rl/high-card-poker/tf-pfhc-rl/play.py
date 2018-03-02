@@ -1,13 +1,12 @@
-from collections import deque
 import pfhc_env as pfhc
 from player import Player
 from strategy import *
+import train
 
 
 STEPS = int(1e4)
 INIT_STACK = 50
 
-memory = deque()
 p1 = Player("A", INIT_STACK, strategy=StrategyRandom())
 p2 = Player("B", INIT_STACK, strategy=StrategyNetwork())
 env = pfhc.HighCardEnv(p1, p2)
@@ -44,13 +43,11 @@ def main(args=None):
         winner = p1 if p1.stack() > p2.stack() else p2
         print(winner.name + " won after " + str(hand) + " hands")
 
+        for p in [p1, p2]:
+            if p.strategy is StrategyNetwork:
+                strategy: StrategyNetwork = p.strategy
+                strategy.add_memories(train.get_memory_from_mdp(history, p))
 
-def get_memory_from_mdp(mdp, player):
-    """
-    :param mdp: Markov decision process samples. 6-tuples (player, state, action, next_state, reward, over)
-    :param player: The player to get memory samples for.
-    :return:
-    """
 
 if __name__ == '__main__':
     tf.app.run()

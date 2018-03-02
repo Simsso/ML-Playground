@@ -5,6 +5,7 @@
       <w>convolutional</w>
       <w>envs</w>
       <w>grayscale</w>
+      <w>hyperparameters</w>
       <w>jacobian</w>
       <w>pfhc</w>
     </words>

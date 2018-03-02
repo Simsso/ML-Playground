@@ -6,6 +6,9 @@ DENSE1_UNITS = 20
 DENSE2_UNITS = 15
 NUM_ACTIONS = 3  # fold, bet, call
 
+# RL hyperparameters
+DISCOUNT_FACTOR = .9
+
 
 def q_fn(x):
     """
@@ -36,7 +39,19 @@ def q_fn(x):
                                   initializer=tf.truncated_normal_initializer(stddev=1.0 / NUM_ACTIONS))
         biases = tf.get_variable('biases', shape=[NUM_ACTIONS], dtype=tf.float32,
                                  initializer=tf.constant_initializer(0.0, dtype=tf.float32))
-        action_logits = tf.add(tf.matmul(dense2, weights), biases, name='pre_activation')
-        actions = tf.nn.softmax(action_logits, dim=1, name=scope.name)
+        action_q = tf.add(tf.matmul(dense2, weights), biases, name='action_q_value')
 
-    return actions
+    return action_q
+
+
+def loss(network_q, network_next_q, rewards):
+    """
+    Computes the loss for a Q-network.
+    TODO: Last state in a MDP equals the Q value, so no next_q is necessary / can be computed at all.
+    :param network_q: The network's guess for action's Q-values in many situations.
+    :param network_next_q: The network's guess for the following action's Q-values.
+    :param rewards: The reward that the env gave for taking the actions.
+    :return: 0-D tensor with a L2 loss scalar.
+    """
+    better_q = DISCOUNT_FACTOR * network_next_q + rewards * (1 - DISCOUNT_FACTOR)
+    return tf.nn.l2_loss(network_q - better_q)

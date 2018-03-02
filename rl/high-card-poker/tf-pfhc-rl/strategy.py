@@ -1,6 +1,7 @@
 import random
 import model
 import tensorflow as tf
+from collections import deque
 
 
 class Strategy:
@@ -45,11 +46,16 @@ class StrategyNetwork(Strategy):
         self.sess.run(tf.local_variables_initializer())
         self.sess.run(tf.global_variables_initializer())
 
+        self.memory = deque(maxlen=100000)
+
     def action(self, state):
         action = self.sess.run(self.chosen_action, feed_dict={
             self.state_batch: [state]
         })
         return Strategy.action_keys[action[0]]  # unpack batch and convert to char
+
+    def add_memories(self, new):
+        self.memory.extend(new)
 
 
 class HumanPlayer(Strategy):

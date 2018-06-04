@@ -1,8 +1,17 @@
-# MATLAB Edge Convolution
+# MATLAB
+
+## 2D cross-correlation
+
+Using the MATLAB function [xcorr2](https://de.mathworks.com/help/signal/ref/xcorr2.html).
+
+### Output image
+![Output](https://lh3.googleusercontent.com/-2s-MKzgGx-mCGRBFelLChGz4Sr2PGBQ4dH3FLhiLwLXNUWvivtirPRcE4H4wVfHiwadHgZKgPKsjEXjNSFvdi9J-3UoT1QNPxMtSitgwhNO_YzpZ4q2I0v0cjbYCQg7ntYO7WRffEbU48cDyLLu3ZYAP9W0oq7fN022YwxawhQJA--Dx60DhXe3GIVBvN1tbCXH8iErGQagCiqb0f-T9xWo2W6yIMoPGS4HmQc1JFIcfx2aLcZYUxIGV4W15MPb4JfgBMvGTQx3_dnXIS043BopWb8mWSR4z56mi_vhK1tzCvcyi5QrN05FXR6fheux1juGMPVs3JA-qwXE6U0O-c-L3eQLwxUDw5Xoiqr3twV64E8OlxBPZtXpTrFT1LUZTfXiadc-IRff5ZmoHqGrkcyjMuCO6ghs_j-mPPR1K6E1qy7yIJB9JLSE7P0IX6o-Ohr-ZdJJm1b6AjEzmzjE8QvKHThySQzKWc4xHYk1-pCaic3g9a1i2F9Qu9qCSQPsG_5u1-rnrJJvxLEx4RNs9iK_MG3y9UwFet9-UEkvGWsjoKBvaStarb1pilO5Nvoo5quNK3W21Jaep2zj9F82AQ1QCGWqft-IeqfEmtUy=w1080-h502-no)
+
+## Edge convolution
 
 The edge convolution script loads an image and subtracts adjacent pixels from each other. This results in an output image that is bright at pixels where the original image hat a strongly changing brightness (edges). 
 
-## Example
+### Example
 Input image
 
 ![Input](https://lh3.googleusercontent.com/Sx5kWHkYkNijhKfMZM1_wNo3lQEDRLOiU7lkSttdb7tvky56Fafq9loEXKJOVHK2CKXgbVP8LjX_9EGrgIAMnA_PadpRx98aYFfHW0SZFBQuU34QFvtSpiIIcgeJntQTRZVaAYeVm0v0CUBhCf8Piz3EJkHN4HqJxF4MgCfw-zwnpcnLkNa0OQSNyPIx5BVh3FgYUFZbBifaiwGRQQn5uTzdiShIbMnD6OqTRVb1sbEEG6yDqXdLPns9V2ads9flMTZp31H0jcWt_-m2PlyHwgCgOjClTovXs3PrTxRXsXKDJyMy7sr0bBrz8juExsQ_5WOTQ2wyDwfitBIOIGnv-np7pThWBxE1tJf9rYDd5FVtmh1VtPLfKmV_m-cE7N0_FElJOMr96K6_LA2C_VoU0q0IagBxZfFNv2N3q5_OKOa4G2bjY5mN_JwC-LKWV6QqExqeHJTNe86qimo9zfak7vKLZXGpwLV7_-bg4oo3lfiAk6D9PCLPwsDzcWhIfllqkHt5Bi4VdajWyCPPidvmX5vfBnqbYm3kXbEDXO1q2XRCW-XNi_3sEsHDBLH8cUBJpNEMsWDNRQYK0b_c9qvAHJ9xnNDaJqaVL8pDdRqkcPqCiqyZRVXuBiZFedrt1Ei5nLJKY4W4e_I_IK1-m14Xolf_uDffNlSM__7d=w1280-h595-no)

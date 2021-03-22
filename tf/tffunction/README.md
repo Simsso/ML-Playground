@@ -126,3 +126,20 @@ TensorFlow detects such behavior and raises a `ValueError`:
 
 In tf.data pipelines I did not see this behavior in our production code.
 Still, it seems to be a good practice to create copies of input lists or dictionaries (nested copies, if needed).
+
+## tf.py_function and tf.numpy_function
+
+From the TF source code:
+
+```
+tf.py_func is deprecated in TF V2. Instead, there are two
+    options available in V2.
+    - tf.py_function takes a python function which manipulates tf eager
+    tensors instead of numpy arrays. It's easy to convert a tf eager tensor to
+    an ndarray (just call tensor.numpy()) but having access to eager tensors
+    means `tf.py_function`s can use accelerators such as GPUs as well as
+    being differentiable using a gradient tape.
+    - tf.numpy_function maintains the semantics of the deprecated tf.py_func
+    (it is not differentiable, and manipulates numpy arrays). It drops the
+    stateful argument making all functions stateful.
+```

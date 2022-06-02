@@ -107,3 +107,6 @@ log
 
 # Mac files
 .DS_STORE
+
+# JetBrains IDE folder
+.idea/

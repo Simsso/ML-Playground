@@ -2,7 +2,8 @@
 
 ## Notebook
 
-* In our implementation PDG 11 we implemented Grathwohl et al. (2019) and trained the EBM on toy data in [your-classifier-is-secretly.ipynb](your-classifier-is-secretly.ipynb).
+* In implementation PDG 11 we implemented Grathwohl et al. (2019) and trained the EBM on toy data in [your-classifier-is-secretly.ipynb](your-classifier-is-secretly.ipynb).
+* In implementation PDG 12 we simplified the EBM to take a 2D input. The aim was to see the training dynamics and plot the contour lines of the energy function. The Colab is [ebm-2d.ipynb](ebm-2d.ipynb).
 
 ## Resources
 

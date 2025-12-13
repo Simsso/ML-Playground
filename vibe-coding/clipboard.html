@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Copy</title>
+    <style>
+        /* --- Basic Styling --- */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            padding: 2rem;
+            margin: 0;
+        }
+
+        /* --- Main Container --- */
+        #main-container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #4a4a4a;
+            margin-bottom: 2rem;
+        }
+
+        /* --- Input Field and Button Group --- */
+        .input-group {
+            display: flex;
+            margin-bottom: 1rem;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .input-group input[type="text"] {
+            flex-grow: 1; /* Allows the input to take up available space */
+            border: 2px solid #ccc;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group input[type="text"]:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        /* --- Button Styling --- */
+        .copy-btn {
+            padding: 0.75rem 1.25rem;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            white-space: nowrap; /* Prevents text from wrapping */
+            transition: background-color 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* --- "Copied!" Feedback State --- */
+        .copy-btn.copied {
+            background-color: #28a745; /* Green color for success */
+        }
+    </style>
+</head>
+<body>
+
+    <div id="main-container">
+        <h1>Quick Copy Tool 📋</h1>
+        <div class="input-group">
+            <input type="text" placeholder="Type or paste text here...">
+            <button class="copy-btn">Copy</button>
+        </div>
+    </div>
+
+    <script>
+        const mainContainer = document.getElementById('main-container');
+
+        /**
+         * Creates a new input group (text field + button) and returns it.
+         * @returns {HTMLElement} A div element containing an input and a button.
+         */
+        function createInputGroup() {
+            // Create the container div
+            const group = document.createElement('div');
+            group.className = 'input-group';
+
+            // Create the text input
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.placeholder = 'Type or paste text here...';
+
+            // Create the copy button
+            const button = document.createElement('button');
+            button.className = 'copy-btn';
+            button.textContent = 'Copy';
+
+            // Add the input and button to the container div
+            group.appendChild(input);
+            group.appendChild(button);
+
+            return group;
+        }
+
+        // --- EVENT LISTENERS ---
+
+        // Listen for typing in the container to add new fields
+        mainContainer.addEventListener('input', (event) => {
+            // Check if the event came from an INPUT element and if it's the last one
+            if (event.target.tagName === 'INPUT' && event.target.parentElement === mainContainer.lastElementChild) {
+                // If the user starts typing in the last field, add a new one
+                mainContainer.appendChild(createInputGroup());
+            }
+        });
+
+        // Listen for clicks in the container to handle copying
+        mainContainer.addEventListener('click', (event) => {
+            // Check if a copy button was clicked
+            if (event.target.classList.contains('copy-btn')) {
+                const button = event.target;
+                const input = button.previousElementSibling; // The input is the element just before the button
+                const textToCopy = input.value;
+
+                // Only copy if there's text in the input field
+                if (textToCopy) {
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        // --- Success! Provide visual feedback ---
+                        const originalText = button.textContent;
+                        button.textContent = 'Copied!';
+                        button.classList.add('copied');
+
+                        // Reset the button's text and style after 1.5 seconds
+                        setTimeout(() => {
+                            button.textContent = originalText;
+                            button.classList.remove('copied');
+                        }, 1500);
+
+                    }).catch(err => {
+                        // Handle potential errors (e.g., permissions denied)
+                        console.error('Error: Could not copy text to clipboard.', err);
+                        alert('Failed to copy text.');
+                    });
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>

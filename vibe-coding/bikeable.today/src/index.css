@@ -1,0 +1,308 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: 
+    linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.4)),
+    url('https://images.unsplash.com/photo-1534430480872-3498386e7856?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80') center/cover;
+  background-attachment: fixed;
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  background: linear-gradient(135deg, 
+    rgba(74, 144, 226, 0.6) 0%, 
+    rgba(45, 156, 219, 0.5) 25%,
+    rgba(135, 206, 250, 0.4) 50%,
+    rgba(176, 224, 230, 0.3) 75%,
+    rgba(255, 255, 255, 0.2) 100%
+  );
+  opacity: 0;
+  transition: opacity 500ms ease-in-out;
+  pointer-events: none;
+}
+
+/* Sunny state - show blue overlay */
+body.sunny-bg::before {
+  opacity: 1;
+}
+
+.app {
+  text-align: center;
+  padding: 2.5rem 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.12),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+  width: 600px;
+  min-height: calc(100vh - 2rem);
+}
+
+header h1 {
+  color: white;
+  margin-bottom: 0.5rem;
+  font-size: 2.5rem;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+}
+
+header p {
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 3rem;
+  font-size: 1.1rem;
+  font-weight: 400;
+}
+
+.decision {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0;
+  padding: 2rem 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.decision h2 {
+  font-size: 2.2rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.01em;
+}
+
+.decision.yes h2 {
+  color: #10b981;
+  text-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+}
+
+.decision.maybe h2 {
+  color: #f59e0b;
+  text-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+}
+
+.decision.no h2 {
+  color: #ef4444;
+  text-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+}
+
+.decision.loading h2 {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.explanation {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.85);
+  margin-top: 0.5rem;
+  font-weight: 400;
+}
+
+.data-source {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 0.5rem;
+  font-style: italic;
+  font-weight: 300;
+}
+
+.console-section {
+  margin-top: 2rem;
+  text-align: left;
+}
+
+.console-section h3 {
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.airport-data {
+  margin-bottom: 1.5rem;
+}
+
+.airport-data h4 {
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.console {
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.85);
+  font-family: 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace;
+  padding: 1.25rem;
+  border-radius: 0;
+  overflow-x: auto;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.console-line {
+  margin-bottom: 0.6rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+}
+
+.console-prompt {
+  color: rgba(255, 255, 255, 0.7);
+  margin-right: 0.75rem;
+  font-weight: 500;
+  min-width: 80px;
+  font-size: 0.75rem;
+}
+
+.console-text {
+  color: rgba(255, 255, 255, 0.85);
+  flex: 1;
+  word-break: break-all;
+  font-weight: 400;
+}
+
+.airport-group {
+  margin-bottom: 1rem;
+}
+
+.airport-group:last-child {
+  margin-bottom: 0;
+}
+
+.decoded-section {
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  border-radius: 0;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.decoded-section h4 {
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.airport-decoded {
+  margin-bottom: 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+}
+
+.airport-decoded:last-child {
+  margin-bottom: 0;
+}
+
+.airport-name {
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+  font-size: 0.85rem;
+  display: inline;
+  margin-right: 0.5rem;
+}
+
+.commute-data {
+  display: inline-flex;
+  align-items: baseline;
+  margin-right: 1rem;
+  margin-bottom: 0.25rem;
+  font-size: 0.8rem;
+}
+
+.commute-label {
+  color: rgba(255, 255, 255, 0.7);
+  margin-right: 0.5rem;
+  min-width: 120px;
+  font-weight: 400;
+}
+
+.decoded-summary {
+  color: rgba(255, 255, 255, 0.85);
+  flex: 1;
+  font-weight: 400;
+}
+
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: rgba(255, 255, 255, 0.8);
+  animation: spin 1s ease-in-out infinite;
+  margin-left: 0.5rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  body {
+    padding: 0;
+  }
+  
+  .app {
+    padding: 1.5rem;
+    margin: 0;
+    min-height: 100vh;
+    width: 100vw;
+    border: none;
+    box-shadow: none;
+    background: rgba(255, 255, 255, 0.08);
+  }
+  
+  header h1 {
+    font-size: 2rem;
+  }
+  
+  .decision {
+    padding: 1.5rem;
+    border: none;
+    background: rgba(255, 255, 255, 0.03);
+  }
+  
+  .decision h2 {
+    font-size: 1.8rem;
+  }
+  
+  .console {
+    padding: 1rem;
+    font-size: 0.7rem;
+    border: none;
+    background: rgba(0, 0, 0, 0.15);
+  }
+  
+  .console-section h3 {
+    font-size: 1rem;
+  }
+}

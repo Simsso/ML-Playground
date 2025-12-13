@@ -1,0 +1,16 @@
+{
+  "name": "bikeable-today-functions",
+  "version": "1.0.0",
+  "description": "Cloud Functions for bikeable.today weather proxy",
+  "main": "index.js",
+  "scripts": {
+    "deploy": "gcloud functions deploy",
+    "test": "echo \"No tests specified\""
+  },
+  "dependencies": {
+    "@google-cloud/functions-framework": "^3.0.0"
+  },
+  "engines": {
+    "node": "20"
+  }
+}
